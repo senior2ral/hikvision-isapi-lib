@@ -1,0 +1,22 @@
+{
+  "name": "hikvision/isapi",
+  "description": "Hikvision PHP Library",
+  "type": "library",
+  "license": "mit",
+  "version": "1.0",
+  "autoload": {
+    "psr-4": {
+      "Hikvision\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Tural Ilyasov",
+      "email": "senior2ral@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.2"
+  }
+}
