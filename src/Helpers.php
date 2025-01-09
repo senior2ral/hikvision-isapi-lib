@@ -6,6 +6,34 @@ use SimpleXMLElement;
 class Helpers
 {
     /**
+     * Extracts the IP address from a given URL.
+     *
+     * This method attempts to retrieve the IP address from a URL by first parsing it to find the host.
+     * If the host is present, it is returned directly. Otherwise, a regular expression is used to search
+     * for an IP address pattern within the provided URL.
+     *
+     * @param string $url The URL from which the IP address is to be extracted.
+     *
+     * @return string|null Returns the IP address as a string if found, or null if no IP address is present.
+     */
+    public static function extractIpFromUrl($url)
+    {
+        // Parse the URL to extract its components
+        $parsedUrl = parse_url($url);
+
+        // Check if the 'host' part exists and return it
+        if (isset($parsedUrl['host'])) {
+            return $parsedUrl['host'];
+        }
+
+        // If no host is found, use REGEX to search for an IP address in the URL
+        preg_match('/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/', $url, $matches);
+
+        // Return the matched IP address or null if not found
+        return $matches[0] ?? null;
+    }
+
+    /**
      * Checks if the provided string is a valid JSON.
      *
      * @param string $string Yoxlanacaq mətn
