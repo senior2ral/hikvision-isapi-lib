@@ -31,6 +31,17 @@ class Barrier extends DeviceManager
     public $portID = 2;
 
     /**
+     * The type of the output port.
+     *
+     * This property defines the type of output port for the device.
+     * It can be either `TYPE_SIGNAL` or `TYPE_GATE`.
+     * By default, it is set to `TYPE_SIGNAL`.
+     *
+     * @var string
+     */
+    public $type = self::TYPE_SIGNAL;
+
+    /**
      * @var HttpClient $httpClient
      *
      * The HTTP client instance used to communicate with the Hikvision device.
@@ -250,16 +261,27 @@ class Barrier extends DeviceManager
             throw new Exception('Invalid parameter: $action. Allowed values: "open", "close".');
         }
 
-        $action = strtr($action, [
-            Barrier::ACTION_OPEN  => 'high',
-            Barrier::ACTION_CLOSE => 'low',
-        ]);
-
-        $response = $this->httpClient->put("/ISAPI/System/IO/outputs/{$this->portID}/trigger", <<<XML
-            <IOPortData>
-                <outputState>{$action}</outputState>
-            </IOPortData>
-        XML);
+        if ($this->type == self::TYPE_GATE) {
+            $action = strtr($action, [
+                Barrier::ACTION_OPEN  => 'open',
+                Barrier::ACTION_CLOSE => 'close',
+            ]);
+            $response = $this->httpClient->put("/ISAPI/Parking/channels/{$this->portID}/barrierGate", <<<XML
+                <BarrierGate>
+                    <ctrlMode>{$action}</ctrlMode>
+                </BarrierGate>
+            XML);
+        } else {
+            $action = strtr($action, [
+                Barrier::ACTION_OPEN  => 'high',
+                Barrier::ACTION_CLOSE => 'low',
+            ]);
+            $response = $this->httpClient->put("/ISAPI/System/IO/outputs/{$this->portID}/trigger", <<<XML
+                <IOPortData>
+                    <outputState>{$action}</outputState>
+                </IOPortData>
+            XML);
+        }
 
         $response = Helpers::xmlToArray($response);
 
